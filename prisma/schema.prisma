@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+	provider = "prisma-client-js"
+}
+
+datasource db {
+	provider          = "mysql"
+	url               = env("DATABASE_URL")
+	shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
+}
+
+model Category {
+	id        Int      @id @default(autoincrement())
+	name      String   @db.VarChar(100)
+	slug      String   @db.VarChar(100)
+	count     Int      @default(0)
+	createdAt DateTime
+	changedAt DateTime
+	Guide     Guide[]
+}
+
+model Authors {
+	id        Int      @id @default(autoincrement())
+	name      String   @db.VarChar(100)
+	slug      String   @db.VarChar(100)
+	info      String   @db.Text
+	contacts  String   @db.VarChar(255)
+	createdAt DateTime
+	changedAt DateTime
+	Guide     Guide[]
+}
+
+model Photos {
+	id        Int      @id @default(autoincrement())
+	name      String   @db.VarChar(100)
+	path      String   @db.VarChar(100)
+	guide     Guide    @relation(fields: [guideId], references: [id])
+	createdAt DateTime
+	changedAt DateTime
+	guideId   Int
+}
+
+model Guide {
+	id         Int      @id @default(autoincrement())
+	name       String   @db.VarChar(255)
+	slug       String   @db.VarChar(255)
+	anons      String   @db.VarChar(255)
+	text       String   @db.Text
+	source     String   @db.VarChar(255)
+	createdAt  DateTime
+	changedAt  DateTime
+	category   Category @relation(fields: [categoryId], references: [id])
+	categoryId Int
+	author     Authors  @relation(fields: [authorsId], references: [id])
+	authorsId  Int
+	Photos     Photos[]
+}
